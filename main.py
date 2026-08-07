@@ -1,6 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header
 
+from models.recent_chat import RecentChat
 from palette import INK_WASH_DARK, INK_WASH_LIGHT
 from recent_chats import RecentChats
 from widgets.new_chat_button import NewChatButton
@@ -11,6 +12,7 @@ class LanguagePalApp(App):
 
     CSS_PATH = ["styles/recent_chats.tcss"]
     BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
+    recent_chats: list[RecentChat] = list()
 
     def __init__(self):
         super().__init__()
@@ -20,7 +22,7 @@ class LanguagePalApp(App):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield RecentChats()
+        yield RecentChats(self.recent_chats)
         yield NewChatButton()
         yield Footer()
 

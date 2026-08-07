@@ -9,3 +9,9 @@
   text-style: bold;
   width: 100%;
 }
+
+#no-chats-label {
+  width: 1fr;
+  height: 1fr;
+  content-align: center middle;
+}
