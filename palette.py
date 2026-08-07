@@ -1,9 +1,9 @@
 from textual.theme import Theme
 
-INK = "#4A4A4A" # charcoal
-MIST = "#CBCBCB" # light grey
-PAPER = "#FFFFE3" # cream
-SLATE = "#6D8196" # slate blue
+INK = "#4A4A4A"  # charcoal
+MIST = "#CBCBCB"  # light grey
+PAPER = "#FFFFE3"  # cream
+SLATE = "#6D8196"  # slate blue
 
 _PALETTE_VARIABLES = {
     "ink": INK,

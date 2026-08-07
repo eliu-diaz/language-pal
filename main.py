@@ -1,11 +1,14 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Label, Header, Footer, Button
+from textual.widgets import Footer, Header
+
+from palette import INK_WASH_DARK, INK_WASH_LIGHT
 from recent_chats import RecentChats
 from widgets.new_chat_button import NewChatButton
-from palette import INK_WASH_DARK, INK_WASH_LIGHT
+
 
 class LanguagePalApp(App):
     """A Textual app to help with verbal language practice"""
+
     CSS_PATH = ["styles/recent_chats.tcss"]
     BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
 

@@ -1,7 +1,7 @@
-
+from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Label, ListItem, ListView
-from textual.app import ComposeResult
+
 
 class RecentChats(VerticalScroll):
     """My Recent Chats Class"""
@@ -15,6 +15,5 @@ class RecentChats(VerticalScroll):
         yield ListView(
             ListItem(Label("The quick brown fox jumps over the lazy dog.")),
             ListItem(Label("The quick brown fox jumps over the lazy dog.")),
-            ListItem(Label("The quick brown fox jumps over the lazy dog."))
+            ListItem(Label("The quick brown fox jumps over the lazy dog.")),
         )
-
