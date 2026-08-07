@@ -12,3 +12,6 @@ dependencies = [
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[tool.mypy]
+python_executable = ".venv/bin/python"
