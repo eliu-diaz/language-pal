@@ -1,0 +1,11 @@
+#title_label {
+  border: solid $secondary;
+  border-subtitle-align: left;
+  width: 100%;
+}
+
+#new_chat_button {
+  color: $paper;
+  text-style: bold;
+  width: 100%;
+}
