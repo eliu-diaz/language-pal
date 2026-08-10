@@ -1,0 +1,41 @@
+NewChatModal {
+  align: center middle;
+}
+
+#new_chat_dialog {
+  width: 60;
+  height: auto;
+  padding: 1 2;
+  background: $surface;
+  border: round $slate;
+}
+
+#new_chat_dialog Select {
+  margin-bottom: 1;
+}
+
+#dialog_header {
+  height: 1;
+  align-horizontal: right;
+}
+
+#close_modal {
+  width: 3;
+  min-width: 3;
+  height: 1;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: $text-muted;
+}
+
+#close_modal:hover {
+  background: $error;
+  color: $paper;
+}
+
+#confirm {
+  width: 100%;
+  margin-top: 1;
+  color: $paper;
+}
