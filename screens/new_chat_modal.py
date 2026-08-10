@@ -1,3 +1,4 @@
+from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
@@ -20,13 +21,17 @@ class NewChatModal(ModalScreen[dict | None]):
 
             yield Button("Confirm", variant="primary", id="confirm")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "confirm":
-            self.dismiss(
-                {
-                    "voice": self.query_one("#voice", Select).value,
-                    "text": self.query_one("#text", Select).value,
-                }
-            )
-        elif event.button.id == "close_modal":
-            self.dismiss(None)
+    @on(Button.Pressed, "#close_modal")
+    def whatever_method(self):
+        self.notify("Wow, you're amazing")
+        self.dismiss(None)
+
+    @on(Button.Pressed, "#confirm")
+    def whatever_other_method(self):
+        self.notify("Wow, you're amazing")
+        self.dismiss(
+            {
+                "voice": self.query_one("#voice", Select).value,
+                "text": self.query_one("#text", Select).value,
+            }
+        )
