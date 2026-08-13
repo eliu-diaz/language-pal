@@ -1,0 +1,46 @@
+#main_chat_container {
+  padding: 1 2;
+  layout: vertical;
+}
+
+#voice_field, #translation_field {
+  height: 1fr;
+  layout: vertical;
+}
+
+#voice_field Label, #translation_field Label {
+  color: $text-muted;
+  text-style: bold;
+}
+
+#user_input_log, #translation_log {
+  height: 1fr;
+  overflow-x: hidden;
+  border: round $slate;
+  padding: 0 1;
+  background: $surface;
+}
+
+#translation_field {
+  margin-top: 1;
+}
+
+#record_row {
+  height: auto;
+  align-horizontal: center;
+  padding-top: 1;
+}
+
+#record_voice_button {
+  width: 9;
+  min-width: 9;
+  height: 3;
+  border: round $slate;
+  background: $surface;
+  content-align: center middle;
+}
+
+#record_voice_button:hover {
+  border: round $primary;
+  background: $primary-muted;
+}

@@ -1,9 +1,14 @@
+from pathlib import PurePath
+from typing import ClassVar
+
 from textual.app import App, ComposeResult
+from textual.binding import BindingType
 from textual.widgets import Footer, Header
 
 from models.recent_chat import RecentChat
 from palette import INK_WASH_DARK, INK_WASH_LIGHT
 from recent_chats import RecentChats
+from screens.chat_screen import ChatScreen
 from screens.new_chat_modal import NewChatModal
 from widgets.new_chat_button import NewChatButton
 
@@ -11,8 +16,12 @@ from widgets.new_chat_button import NewChatButton
 class LanguagePalApp(App):
     """A Textual app to help with verbal language practice"""
 
-    CSS_PATH = ["styles/recent_chats.tcss", "styles/new_chat_modal.tcss"]
-    BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
+    CSS_PATH: ClassVar[list[str | PurePath]] = [
+        "styles/recent_chats.tcss",
+        "styles/new_chat_modal.tcss",
+        "styles/chat_screen.tcss",
+    ]
+    BINDINGS: ClassVar[list[BindingType]] = [("d", "toggle_dark", "Toggle dark mode")]
     recent_chats: list[RecentChat] = list()
 
     def __init__(self):
@@ -33,11 +42,19 @@ class LanguagePalApp(App):
             "ink-wash-dark" if self.theme == "ink-wash-light" else "ink-wash-light"
         )
 
-    def on_new_chat_button_selected(self, message: NewChatButton.Selected) -> None:
-        def handle_new_chat_modal_closure(selection: dict | None) -> None:
-            self.notify(f"Data selected was: {selection}")
+    def on_chat_screen_go_back(self, message: ChatScreen.GoBack) -> None:
+        self.pop_screen()
 
-        self.push_screen(NewChatModal(), handle_new_chat_modal_closure)
+    def on_new_chat_button_selected(self, message: NewChatButton.Selected) -> None:
+        self.push_screen(NewChatModal(), self.handle_new_chat_modal_closure)
+
+    def handle_new_chat_modal_closure(self, selection: dict | None) -> None:
+        self.notify(f"Data selected was: {selection}")
+        # Once we got our selection ready, we navigate to the Chat screen, starting the main feature of the app...
+        self.push_screen(ChatScreen())
+
+    def handle_chat_closure(self) -> None:
+        self.pop_screen()
 
 
 if __name__ == "__main__":

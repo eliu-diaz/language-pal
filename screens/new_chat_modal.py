@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal
@@ -8,7 +10,7 @@ from textual.widgets import Button, Label, Select
 class NewChatModal(ModalScreen[dict | None]):
     """Modal screen to set up preferences for a new chat"""
 
-    LANGUAGES: list[tuple[str, str]] = [
+    LANGUAGES: ClassVar[list[tuple[str, str]]] = [
         ("English", "en"),
         ("French", "fr"),
         ("Spanish", "es"),
