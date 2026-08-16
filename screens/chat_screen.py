@@ -1,7 +1,7 @@
 import asyncio
 from typing import ClassVar
 
-from textual import work
+from textual import on, work
 from textual.app import ComposeResult
 from textual.binding import BindingType
 from textual.containers import Container
@@ -32,6 +32,10 @@ class ChatScreen(Screen[None]):
                 yield Button("\U0001f3a4", id="record_voice_button")
 
         yield Footer()
+
+    @on(Button.Pressed, "#record_voice_button")
+    def record_button_pressed(self, event: Button.Pressed):
+        pass  # TODO: When ready to start speech-to-text
 
     def on_mount(self) -> None:
         self.notify("On ready finished!")

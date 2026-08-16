@@ -49,9 +49,8 @@ class LanguagePalApp(App):
         self.push_screen(NewChatModal(), self.handle_new_chat_modal_closure)
 
     def handle_new_chat_modal_closure(self, selection: dict | None) -> None:
-        self.notify(f"Data selected was: {selection}")
-        # Once we got our selection ready, we navigate to the Chat screen, starting the main feature of the app...
-        self.push_screen(ChatScreen())
+        if selection:
+            self.push_screen(ChatScreen())
 
     def handle_chat_closure(self) -> None:
         self.pop_screen()

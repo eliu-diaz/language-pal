@@ -14,6 +14,4 @@ class NewChatButton(Button):
     def on_button_pressed(self, event: Button.Pressed):
         """Cmon do something"""
         event.stop()
-        print(event)
-        print("C'mon do somethin'")
         self.post_message(self.Selected())
