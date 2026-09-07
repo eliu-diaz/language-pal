@@ -10,6 +10,7 @@ from textual.widgets import Button, Label, Select
 class NewChatModal(ModalScreen[dict | None]):
     """Modal screen to set up preferences for a new chat"""
 
+    # These match the ISO 639-1 standard for languages
     LANGUAGES: ClassVar[list[tuple[str, str]]] = [
         ("English", "en"),
         ("French", "fr"),

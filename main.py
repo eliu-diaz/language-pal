@@ -50,12 +50,22 @@ class LanguagePalApp(App):
 
     def handle_new_chat_modal_closure(self, selection: dict | None) -> None:
         if selection:
-            self.push_screen(ChatScreen())
+            self.push_screen(ChatScreen(selection))
 
     def handle_chat_closure(self) -> None:
         self.pop_screen()
 
 
 if __name__ == "__main__":
+    # To deal with a race between Textual and RealtimeSTT
+    from multiprocessing import resource_tracker
+
+    resource_tracker.ensure_running()
+
     app = LanguagePalApp()
-    app.run()
+
+    try:
+        app.run()
+    finally:
+        pass
+        # Perform actions on app termination.

@@ -44,3 +44,9 @@
   border: round $primary;
   background: $primary-muted;
 }
+
+/* The default indicator blends into the ink-wash greys; give it contrast. */
+LoadingIndicator.-textual-loading-indicator {
+  color: $warning;
+  background: $surface;
+}
