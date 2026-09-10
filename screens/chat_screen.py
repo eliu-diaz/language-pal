@@ -12,6 +12,7 @@ from textual.widgets import Button, Footer, Header, Label, Log
 from textual.worker import Worker, get_current_worker
 
 from logging_setup import cap_realtimestt_log
+from speech_models import MODEL_SIZE, is_model_cached
 
 MIC_LABEL = "\U0001f3a4"
 # A plain geometric glyph, not an emoji: emoji-presentation squares (U+23F9 +
@@ -68,6 +69,16 @@ class ChatScreen(Screen[None]):
     async def start_listening(self) -> None:
         chat_container = self.query_one("#main_chat_container", Container)
 
+        # A missing model means a few hundred MB over the network behind that
+        # spinner, so say so rather than looking hung.
+        if not is_model_cached():
+            self.notify(
+                f"Downloading the {MODEL_SIZE} speech model (~480 MB). "
+                "This happens once; run fetch_models.py to do it up front.",
+                title="First run",
+                timeout=10,
+            )
+
         chat_container.loading = True
         try:
             await self.build_recorder().wait()
@@ -112,7 +123,7 @@ class ChatScreen(Screen[None]):
             device="cpu",
             compute_type="int8",
             spinner=False,
-            model="small",
+            model=MODEL_SIZE,
         )
         # The handler only exists once the recorder has been constructed.
         cap_realtimestt_log()
