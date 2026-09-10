@@ -10,3 +10,7 @@ game_events.jsonl
 
 # Virtual environments
 .venv
+
+# RealtimeSTT debug log (rotated by logging_setup.py)
+realtimesst.log
+realtimesst.log.*

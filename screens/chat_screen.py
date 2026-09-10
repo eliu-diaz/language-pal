@@ -11,6 +11,8 @@ from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Label, Log
 from textual.worker import Worker, get_current_worker
 
+from logging_setup import cap_realtimestt_log
+
 MIC_LABEL = "\U0001f3a4"
 # A plain geometric glyph, not an emoji: emoji-presentation squares (U+23F9 +
 # VS16) render as a dark box in most terminals. Colour comes from the CSS.
@@ -112,6 +114,8 @@ class ChatScreen(Screen[None]):
             spinner=False,
             model="small",
         )
+        # The handler only exists once the recorder has been constructed.
+        cap_realtimestt_log()
 
     def write_log_callback(self, text: str) -> None:
         self.query_one("#user_input_log", Log).write_line(text)
