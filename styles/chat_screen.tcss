@@ -40,6 +40,11 @@
   content-align: center middle;
 }
 
+#record_voice_button.-listening {
+  color: $error;
+  border: round $error;
+}
+
 #record_voice_button:hover {
   border: round $primary;
   background: $primary-muted;

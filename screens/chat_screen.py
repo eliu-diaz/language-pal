@@ -6,15 +6,27 @@ from textual.app import ComposeResult
 from textual.binding import BindingType
 from textual.containers import Container
 from textual.message import Message
+from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Label, Log
+from textual.worker import Worker, get_current_worker
+
+MIC_LABEL = "\U0001f3a4"
+# A plain geometric glyph, not an emoji: emoji-presentation squares (U+23F9 +
+# VS16) render as a dark box in most terminals. Colour comes from the CSS.
+STOP_LABEL = "\u25a0"
 
 
 class ChatScreen(Screen[None]):
+    # init=False: the button already composes with MIC_LABEL, and the watcher
+    # would otherwise run before compose() has created it.
+    is_listening: reactive[bool] = reactive(False, init=False)
+
     def __init__(self, selection: dict[str, str]) -> None:
         super().__init__()
         self.selection = selection
         self.recorder: AudioToTextRecorder | None = None
+        self.listen_worker: Worker[None] | None = None
 
     class GoBack(Message):
         """Used to send a go_back message to main.py"""
@@ -34,21 +46,61 @@ class ChatScreen(Screen[None]):
                 yield Log(id="translation_log")
 
             with Container(id="record_row"):
-                yield Button("\U0001f3a4", id="record_voice_button")
+                yield Button(MIC_LABEL, id="record_voice_button")
 
         yield Footer()
 
+    def watch_is_listening(self, listening: bool) -> None:
+        """Keeps the mic button in sync with the recording state."""
+        button = self.query_one("#record_voice_button", Button)
+        button.label = STOP_LABEL if listening else MIC_LABEL
+        button.set_class(listening, "-listening")
+
     @on(Button.Pressed, "#record_voice_button")
     async def record_button_pressed(self, event: Button.Pressed) -> None:
+        if self.is_listening:
+            await self.stop_listening()
+        else:
+            await self.start_listening()
+
+    async def start_listening(self) -> None:
         chat_container = self.query_one("#main_chat_container", Container)
 
-        if self.recorder is None:
-            chat_container.loading = True
-            try:
-                await self.build_recorder().wait()
-                self.fetch_user_voice()
-            finally:
-                chat_container.loading = False
+        chat_container.loading = True
+        try:
+            await self.build_recorder().wait()
+        finally:
+            chat_container.loading = False
+
+        self.is_listening = True
+        self.listen_worker = self.fetch_user_voice()
+
+    async def stop_listening(self) -> None:
+        """Cancels the listen loop, then tears the recorder down for good."""
+        self.is_listening = False
+
+        # Cancel first so the loop sees the flag the moment shutdown wakes it.
+        if self.listen_worker is not None:
+            self.listen_worker.cancel()
+            self.listen_worker = None
+
+        button = self.query_one("#record_voice_button", Button)
+        button.disabled = True
+        try:
+            await self.teardown_recorder().wait()
+        finally:
+            button.disabled = False
+
+    @work(thread=True)
+    def teardown_recorder(self) -> None:
+        """shutdown() joins child processes, so keep it off the UI thread.
+
+        It also sets the events wait_audio() blocks on, which is what
+        releases the listen worker parked inside recorder.text().
+        """
+        recorder, self.recorder = self.recorder, None
+        if recorder is not None:
+            recorder.shutdown()
 
     @work(thread=True, exclusive=True)
     def build_recorder(self) -> None:
@@ -66,13 +118,25 @@ class ChatScreen(Screen[None]):
 
     def on_unmount(self) -> None:
         # When app is terminated or screen is popped, we should shutdown the recorder
+        if self.listen_worker is not None:
+            self.listen_worker.cancel()
+            self.listen_worker = None
         if self.recorder:
             self.recorder.shutdown()
+            self.recorder = None
 
-    @work(thread=True)
+    @work(thread=True, group="listen")
     def fetch_user_voice(self) -> None:
-        while True:
-            self.recorder.text(self.write_log_callback)
+        """Blocking transcription loop; exits when cancelled or torn down."""
+        worker = get_current_worker()
+        recorder = self.recorder
+
+        while recorder is not None and not worker.is_cancelled:
+            text = recorder.text()
+            # A shutdown releases text() with nothing useful; don't log that.
+            if worker.is_cancelled or not text:
+                break
+            self.app.call_from_thread(self.write_log_callback, text)
 
     def action_go_back(self) -> None:
         self.notify("Going back!")
