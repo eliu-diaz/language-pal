@@ -8,6 +8,7 @@ dependencies = [
     "realtimestt[faster-whisper]>=1.0.4",
     "textual>=8.2.8",
     "textual-dev>=1.8.0",
+    "translate>=3.8.1",
 ]
 
 [tool.pyright]

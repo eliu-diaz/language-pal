@@ -10,6 +10,7 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Label, Log
 from textual.worker import Worker, get_current_worker
+from translate import Translator
 
 from logging_setup import cap_realtimestt_log
 from speech_models import MODEL_SIZE, is_model_cached
@@ -30,6 +31,11 @@ class ChatScreen(Screen[None]):
         self.selection = selection
         self.recorder: AudioToTextRecorder | None = None
         self.listen_worker: Worker[None] | None = None
+        # MyMemory needs both ends: without from_lang it guesses, and a
+        # learner's shaky Spanish is exactly what it guesses wrong.
+        self.translator = Translator(
+            from_lang=selection["voice"], to_lang=selection["text"]
+        )
 
     class GoBack(Message):
         """Used to send a go_back message to main.py"""
@@ -131,6 +137,13 @@ class ChatScreen(Screen[None]):
     def write_log_callback(self, text: str) -> None:
         self.query_one("#user_input_log", Log).write_line(text)
 
+    def translate_callback(self, translation: str) -> None:
+        self.query_one("#translation_log", Log).write_line(translation)
+
+    def translate(self, text: str) -> str:
+        """Runs on the worker thread: this is a network round-trip."""
+        return self.translator.translate(text)
+
     def on_unmount(self) -> None:
         # When app is terminated or screen is popped, we should shutdown the recorder
         if self.listen_worker is not None:
@@ -152,6 +165,17 @@ class ChatScreen(Screen[None]):
             if worker.is_cancelled or not text:
                 break
             self.app.call_from_thread(self.write_log_callback, text)
+
+            # MyMemory is a free public endpoint with a daily character cap,
+            # so a failure here must not take the listen loop down with it.
+            try:
+                translation = self.translate(text)
+            except Exception as error:
+                translation = f"[translation unavailable: {error}]"
+
+            if worker.is_cancelled:
+                break
+            self.app.call_from_thread(self.translate_callback, translation)
 
     def action_go_back(self) -> None:
         self.notify("Going back!")
