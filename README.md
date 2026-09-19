@@ -13,5 +13,5 @@ Skipping this still works — the model downloads on the first mic tap instead.
 
 ### Features
 * Speech-to-text + realtime translation
-* Save your conversations locally for later practice
+* [pending] - Save your conversations locally for later practice
 
