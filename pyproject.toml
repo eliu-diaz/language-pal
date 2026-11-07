@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "realtimestt[faster-whisper]>=1.0.4",
+    "silero-vad>=6.2.2",
     "textual>=8.2.8",
     "textual-dev>=1.8.0",
     "translate>=3.8.1",
