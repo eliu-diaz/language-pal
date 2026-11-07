@@ -14,3 +14,6 @@ game_events.jsonl
 # RealtimeSTT debug log (rotated by logging_setup.py)
 realtimesst.log
 realtimesst.log.*
+
+# System files
+.DS_Store
